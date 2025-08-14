@@ -17,4 +17,4 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: DATABASE_URL
-        value: "sqlite:///db.sqlite3"
+        value: "postgresql://book_ur_seat_user:mBxarEuxixaX1snmGqiLnKZp5eyhtE0H@dpg-d2f20rk9c44c739i9oe0-a.oregon-postgres.render.com/book_ur_seat"
