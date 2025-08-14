@@ -1,0 +1,281 @@
+{% extends 'users/basic.html' %}
+
+{% block title %}Admin Dashboard - Book Ur Seat{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">📊 Admin Dashboard</h2>
+        </div>
+    </div>
+    
+    <!-- Key Metrics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">Total Revenue</h4>
+                            <h2>₹{{ total_revenue|floatformat:0 }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-rupee-sign fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">Total Bookings</h4>
+                            <h2>{{ total_bookings }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-ticket-alt fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">Active Users</h4>
+                            <h2>{{ active_users }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">Seat Utilization</h4>
+                            <h2>{{ seat_utilization.utilization_percentage }}%</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-chair fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Daily Revenue (Last 30 Days)</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Genre Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="genreChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Popular Movies and Theater Performance -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>🎬 Popular Movies</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for movie in popular_movies %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">{{ movie.name }}</h6>
+                                <small class="text-muted">{{ movie.genre|title }} • {{ movie.language|title }}</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">{{ movie.booking_count }} bookings</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>🏢 Theater Performance</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for theater in theater_performance %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">{{ theater.name }}</h6>
+                                <small class="text-muted">{{ theater.booking_count }} bookings</small>
+                            </div>
+                            <span class="badge bg-success rounded-pill">₹{{ theater.revenue|floatformat:0 }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Activities -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>📅 Recent Bookings</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for booking in recent_bookings %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ booking.user.username }}</h6>
+                                <small class="text-muted">{{ booking.booked_at|timesince }} ago</small>
+                            </div>
+                            <p class="mb-1">{{ booking.movie.name }} - {{ booking.theater.name }}</p>
+                            <small class="text-muted">Seat: {{ booking.seat.seat_number }} • ₹{{ booking.amount_paid|default:0 }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>⏰ Active Reservations</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for reservation in recent_reservations %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ reservation.user.username }}</h6>
+                                <small class="text-muted">Expires in {{ reservation.expires_at|timeuntil }}</small>
+                            </div>
+                            <p class="mb-1">{{ reservation.theater.movie.name }} - {{ reservation.theater.name }}</p>
+                            <small class="text-muted">Seat: {{ reservation.seat.seat_number }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Navigation to other admin pages -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Admin Tools</h5>
+                    <a href="{% url 'revenue_report' %}" class="btn btn-outline-primary me-2">
+                        <i class="fas fa-chart-line"></i> Revenue Report
+                    </a>
+                    <a href="{% url 'user_analytics' %}" class="btn btn-outline-info me-2">
+                        <i class="fas fa-users"></i> User Analytics
+                    </a>
+                    <a href="{% url 'admin:index' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-cog"></i> Django Admin
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Revenue Chart
+const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+const revenueData = {{ daily_revenue|safe }};
+
+new Chart(revenueCtx, {
+    type: 'line',
+    data: {
+        labels: revenueData.map(item => item.date),
+        datasets: [{
+            label: 'Daily Revenue (₹)',
+            data: revenueData.map(item => item.revenue),
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Genre Chart
+const genreCtx = document.getElementById('genreChart').getContext('2d');
+const genreData = {{ genre_distribution|safe }};
+
+new Chart(genreCtx, {
+    type: 'doughnut',
+    data: {
+        labels: Object.keys(genreData),
+        datasets: [{
+            data: Object.values(genreData),
+            backgroundColor: [
+                '#FF6384',
+                '#36A2EB',
+                '#FFCE56',
+                '#4BC0C0',
+                '#9966FF',
+                '#FF9F40',
+                '#FF6384',
+                '#C9CBCF',
+                '#4BC0C0',
+                '#FF6384'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

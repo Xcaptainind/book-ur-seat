@@ -1,0 +1,21 @@
+Booking Confirmation
+
+Hello {{ user.first_name|default:user.username }}!
+
+Your booking has been confirmed successfully. Here are the details:
+
+Movie Details:
+- Movie: {{ movie.name }}
+- Theater: {{ theater.name }}
+- Location: {{ theater.location|default:"Not specified" }}
+- Date & Time: {{ theater.time|date:"F j, Y, g:i a" }}
+- Seat Number: {{ seat.seat_number }}
+- Amount Paid: ₹{{ booking.amount_paid|default:seat.price|default:theater.price_per_seat }}
+
+Please arrive at least 15 minutes before the show time.
+
+If you have any questions, please contact our support team.
+
+Enjoy your movie!
+
+© 2024 Book Ur Seat. All rights reserved.
