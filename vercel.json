@@ -3,9 +3,9 @@
         {
             "src": "book_ur_seat/wsgi.py",
             "use": "@vercel/python",
-            "config": { 
-                "maxLambdaSize": "15mb", 
-                "runtime": "python3.11" 
+            "config": {
+                "maxLambdaSize": "15mb",
+                "runtime": "python3.11"
             }
         }
     ],
@@ -17,5 +17,6 @@
     ],
     "env": {
         "PYTHONPATH": "."
-    }
+    },
+    "buildCommand": "bash vercel-build"
 }
