@@ -1,13 +1,30 @@
 {
-    "builds": [{
-        "src": "book_ur_seat/wsgi.py",
-        "use": "@vercel/python",
-        "config": { "maxLambdaSize": "15mb", "runtime": "python3.9" }
-    }],
+    "builds": [
+        {
+            "src": "book_ur_seat/wsgi.py",
+            "use": "@vercel/python",
+            "config": { 
+                "maxLambdaSize": "15mb", 
+                "runtime": "python3.9" 
+            }
+        }
+    ],
     "routes": [
+        {
+            "src": "/static/(.*)",
+            "dest": "/static/$1"
+        },
+        {
+            "src": "/media/(.*)",
+            "dest": "/media/$1"
+        },
         {
             "src": "/(.*)",
             "dest": "book_ur_seat/wsgi.py"
         }
-    ]
+    ],
+    "env": {
+        "PYTHONPATH": "."
+    },
+    "buildCommand": "bash vercel-build"
 }

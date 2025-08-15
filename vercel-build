@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build script for Vercel deployment
+# Vercel build script
 
 # Install dependencies
 pip install -r requirements.txt
@@ -10,4 +10,4 @@ python manage.py collectstatic --noinput
 # Run migrations
 python manage.py migrate --noinput
 
-echo "Build completed successfully!"
+echo "Vercel build completed successfully!"
