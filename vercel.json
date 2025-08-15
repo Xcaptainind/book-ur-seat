@@ -8,5 +8,5 @@
     "env": {
         "PYTHONPATH": "."
     },
-    "buildCommand": "python manage.py migrate --noinput && python manage.py collectstatic --noinput"
+    "buildCommand": "python3.12 manage.py migrate --noinput && python3.12 manage.py collectstatic --noinput"
 }
