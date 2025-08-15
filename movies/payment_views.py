@@ -1,5 +1,5 @@
 import stripe
-import razorpay
+# import razorpay  # Commented out for now - will add later
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -20,10 +20,10 @@ logger = logging.getLogger(__name__)
 # Configure Stripe
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
-# Configure Razorpay
-razorpay_client = razorpay.Client(
-    auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
-)
+# Configure Razorpay (commented out for now)
+# razorpay_client = razorpay.Client(
+#     auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
+# )
 
 
 @login_required
@@ -56,8 +56,8 @@ def payment_page(request, theater_id):
             
             if payment_method == 'stripe':
                 return redirect('stripe_payment', theater_id=theater_id)
-            elif payment_method == 'razorpay':
-                return redirect('razorpay_payment', theater_id=theater_id)
+            # elif payment_method == 'razorpay': # Removed razorpay payment option
+            #     return redirect('razorpay_payment', theater_id=theater_id)
     else:
         form = PaymentForm()
     
@@ -128,70 +128,70 @@ def stripe_webhook(request):
     return JsonResponse({'status': 'success'})
 
 
-@login_required
-def razorpay_payment(request, theater_id):
-    """Handle Razorpay payment"""
-    theater = get_object_or_404(Theater, id=theater_id)
-    payment_details = request.session.get('payment_details', {})
+# @login_required
+# def razorpay_payment(request, theater_id):
+#     """Handle Razorpay payment"""
+#     theater = get_object_or_404(Theater, id=theater_id)
+#     payment_details = request.session.get('payment_details', {})
     
-    if not payment_details:
-        messages.error(request, 'Payment details not found.')
-        return redirect('payment_page', theater_id=theater_id)
+#     if not payment_details:
+#         messages.error(request, 'Payment details not found.')
+#         return redirect('payment_page', theater_id=theater_id)
     
-    # Create Razorpay order
-    try:
-        order_data = {
-            'amount': int(payment_details['total_amount'] * 100),  # Convert to paise
-            'currency': 'INR',
-            'receipt': f'order_{theater_id}_{request.user.id}',
-            'notes': {
-                'theater_id': str(theater_id),
-                'user_id': str(request.user.id),
-            }
-        }
+#     # Create Razorpay order
+#     try:
+#         order_data = {
+#             'amount': int(payment_details['total_amount'] * 100),  # Convert to paise
+#             'currency': 'INR',
+#             'receipt': f'order_{theater_id}_{request.user.id}',
+#             'notes': {
+#                 'theater_id': str(theater_id),
+#                 'user_id': str(request.user.id),
+#             }
+#         }
         
-        razorpay_order = razorpay_client.order.create(data=order_data)
+#         razorpay_order = razorpay_client.order.create(data=order_data)
         
-        context = {
-            'theater': theater,
-            'razorpay_order_id': razorpay_order['id'],
-            'razorpay_key_id': settings.RAZORPAY_KEY_ID,
-            'amount': payment_details['total_amount'],
-            'user_email': payment_details['email'],
-            'user_phone': payment_details['phone'],
-        }
-        return render(request, 'movies/razorpay_payment.html', context)
+#         context = {
+#             'theater': theater,
+#             'razorpay_order_id': razorpay_order['id'],
+#             'razorpay_key_id': settings.RAZORPAY_KEY_ID,
+#             'amount': payment_details['total_amount'],
+#             'user_email': payment_details['email'],
+#             'user_phone': payment_details['phone'],
+#         }
+#         return render(request, 'movies/razorpay_payment.html', context)
         
-    except Exception as e:
-        logger.error(f'Razorpay order creation failed: {str(e)}')
-        messages.error(request, 'Payment initialization failed. Please try again.')
-        return redirect('payment_page', theater_id=theater_id)
+#     except Exception as e:
+#         logger.error(f'Razorpay order creation failed: {str(e)}')
+#         messages.error(request, 'Payment initialization failed. Please try again.')
+#         return redirect('payment_page', theater_id=theater_id)
 
 
-@csrf_exempt
-def razorpay_webhook(request):
-    """Handle Razorpay webhook for payment confirmation"""
-    try:
-        # Verify webhook signature
-        webhook_signature = request.META.get('HTTP_X_RAZORPAY_SIGNATURE')
-        webhook_body = request.body
+# @csrf_exempt
+# def razorpay_webhook(request):
+#     """Handle Razorpay webhook for payment confirmation"""
+#     try:
+#         # Verify webhook signature
+#         webhook_signature = request.META.get('HTTP_X_RAZORPAY_SIGNATURE')
+#         webhook_body = request.body
         
-        razorpay_client.utility.verify_webhook_signature(
-            webhook_body, webhook_signature, settings.RAZORPAY_WEBHOOK_SECRET
-        )
+#         razorpay_client.utility.verify_webhook_signature(
+#             webhook_body, webhook_signature, settings.RAZORPAY_WEBHOOK_SECRET
+#         )
         
-        # Parse webhook data
-        webhook_data = json.loads(webhook_body)
+#         # Parse webhook data
+#         webhook_data = json.loads(webhook_body)
         
-        if webhook_data['event'] == 'payment.captured':
-            payment_data = webhook_data['payload']['payment']['entity']
-            handle_successful_payment(payment_data, 'razorpay')
+#         if webhook_data['event'] == 'payment.captured':
+#             payment_data = webhook_data['payload']['payment']['entity']
+#             handle_successful_payment(payment_data, 'razorpay')
         
-        return JsonResponse({'status': 'success'})
+#         return JsonResponse({'status': 'success'})
         
-    except Exception as e:
-        logger.error(f'Razorpay webhook verification failed: {str(e)}')
-        return JsonResponse({'error': 'Webhook verification failed'}, status=400)
+#     except Exception as e:
+#         logger.error(f'Razorpay webhook verification failed: {str(e)}')
+#         return JsonResponse({'error': 'Webhook verification failed'}, status=400)
 
 
 def handle_successful_payment(payment_data, payment_method):
@@ -202,11 +202,11 @@ def handle_successful_payment(payment_data, payment_method):
             user_id = payment_data['metadata']['user_id']
             transaction_id = payment_data['id']
             amount = payment_data['amount'] / 100  # Convert from cents
-        else:  # Razorpay
-            theater_id = payment_data['notes']['theater_id']
-            user_id = payment_data['notes']['user_id']
-            transaction_id = payment_data['id']
-            amount = payment_data['amount'] / 100  # Convert from paise
+        # else:  # Razorpay # Removed razorpay handling
+        #     theater_id = payment_data['notes']['theater_id'] # Removed razorpay handling
+        #     user_id = payment_data['notes']['user_id'] # Removed razorpay handling
+        #     transaction_id = payment_data['id'] # Removed razorpay handling
+        #     amount = payment_data['amount'] / 100  # Convert from paise # Removed razorpay handling
         
         # Create booking for each selected seat
         selected_seat_ids = SeatReservation.objects.filter(

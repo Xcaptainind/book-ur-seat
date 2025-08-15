@@ -89,8 +89,8 @@ EMAIL_HOST_PASSWORD = 'your-app-password'  # Update with your app password
 STRIPE_PUBLISHABLE_KEY = 'your-stripe-publishable-key'  # Update with your Stripe key
 STRIPE_SECRET_KEY = 'your-stripe-secret-key'  # Update with your Stripe key
 
-RAZORPAY_KEY_ID = 'your-razorpay-key-id'  # Update with your Razorpay key
-RAZORPAY_KEY_SECRET = 'your-razorpay-secret-key'  # Update with your Razorpay key
+# RAZORPAY_KEY_ID = 'your-razorpay-key-id'  # Update with your Razorpay key - Commented out for now
+# RAZORPAY_KEY_SECRET = 'your-razorpay-secret-key'  # Update with your Razorpay key - Commented out for now
 
 # Celery Configuration
 CELERY_BROKER_URL = 'redis://localhost:6379/0'

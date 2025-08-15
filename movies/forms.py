@@ -41,7 +41,7 @@ class SeatSelectionForm(forms.Form):
 class PaymentForm(forms.Form):
     PAYMENT_METHOD_CHOICES = [
         ('stripe', 'Credit/Debit Card (Stripe)'),
-        ('razorpay', 'UPI/Net Banking (Razorpay)'),
+        # ('razorpay', 'UPI/Net Banking (Razorpay)'),  # Commented out for now
     ]
     
     payment_method = forms.ChoiceField(
