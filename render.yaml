@@ -3,7 +3,9 @@ services:
     name: book-ur-seat
     env: python
     plan: free
-    buildCommand: pip install -r requirements.txt
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py migrate
     startCommand: gunicorn book_ur_seat.wsgi:application
     envVars:
       - key: PYTHON_VERSION
