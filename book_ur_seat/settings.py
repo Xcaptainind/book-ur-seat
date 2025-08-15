@@ -28,6 +28,9 @@ DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '.vercel.app,.onrender.com,localhost,127.0.0.1').split(',')
 
+# Check if running on Vercel
+IS_VERCEL = os.environ.get('VERCEL') == '1'
+
 # Add CSRF trusted origins for Vercel
 CSRF_TRUSTED_ORIGINS = [
     'https://*.vercel.app',
@@ -55,7 +58,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add WhiteNoise for static files
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add WhiteNoise for static files (only when not on Vercel)
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -63,6 +66,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Remove WhiteNoise middleware on Vercel (serverless environment)
+if IS_VERCEL:
+    MIDDLEWARE = [mw for mw in MIDDLEWARE if 'whitenoise' not in mw.lower()]
 
 AUTH_USER_MODEL='auth.User'
 
@@ -105,12 +112,13 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-# WhiteNoise configuration for static files
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# Ensure staticfiles directory exists
-if not os.path.exists(STATIC_ROOT):
-    os.makedirs(STATIC_ROOT)
+# WhiteNoise configuration for static files (simplified for Vercel)
+if IS_VERCEL:
+    # On Vercel, use basic static files storage
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+else:
+    # On other platforms, use WhiteNoise
+    STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
 
 # Media files configuration for Vercel
 MEDIA_URL = '/media/'
