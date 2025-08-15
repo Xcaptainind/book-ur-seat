@@ -10,11 +10,3 @@
     },
     "buildCommand": "python manage.py migrate --noinput && python manage.py collectstatic --noinput"
 }
-```{bash}
-#!/bin/bash
-# A simple build script for Vercel deployment.
-# This script is no longer needed as the commands are now run directly
-# from the vercel.json file.
-
-echo "Build completed successfully!"
-
