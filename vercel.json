@@ -8,5 +8,5 @@
     "env": {
         "PYTHONPATH": "."
     },
-    "buildCommand": "bash vercel-build"
+    "buildCommand": "python build.sh"
 }
