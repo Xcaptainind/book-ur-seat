@@ -139,7 +139,7 @@ media/
 
 # Static files
 staticfiles/
-static/
+
 
 # Environment variables
 .env
