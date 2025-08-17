@@ -109,3 +109,97 @@
     {% endfor %}
 </ul> -->
 {% endblock %}
+{% extends 'users/basic.html' %}
+{% load static %}
+
+{% block title %}Movies - Book Ur Seat{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <h2 class="mb-4">
+        <i class="fas fa-film me-2"></i>Now Showing
+      </h2>
+      
+      <!-- Search Bar -->
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <form method="GET" class="d-flex">
+            <input type="text" name="search" class="form-control me-2" 
+                   placeholder="Search movies..." value="{{ request.GET.search }}">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-search"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Movies Grid -->
+      {% if movies %}
+        <div class="row">
+          {% for movie in movies %}
+            <div class="col-md-4 col-lg-3 mb-4">
+              <div class="card movie-card h-100">
+                {% if movie.poster %}
+                  <img src="{{ movie.poster.url }}" class="card-img-top" alt="{{ movie.name }}">
+                {% else %}
+                  <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 300px;">
+                    <i class="fas fa-film fa-3x text-white"></i>
+                  </div>
+                {% endif %}
+                
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title">{{ movie.name }}</h5>
+                  <p class="card-text flex-grow-1">
+                    <small class="text-muted">
+                      <i class="fas fa-tag me-1"></i>{{ movie.get_genre_display }}<br>
+                      <i class="fas fa-language me-1"></i>{{ movie.get_language_display }}<br>
+                      <i class="fas fa-clock me-1"></i>{{ movie.duration }} min<br>
+                      <i class="fas fa-star me-1"></i>{{ movie.rating|default:"Not Rated" }}
+                    </small>
+                  </p>
+                  <div class="mt-auto">
+                    <a href="{% url 'theater_list' movie.id %}" class="btn btn-primary w-100">
+                      <i class="fas fa-ticket-alt me-2"></i>Book Tickets
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="alert alert-info text-center">
+          <i class="fas fa-info-circle me-2"></i>
+          {% if request.GET.search %}
+            No movies found matching "{{ request.GET.search }}".
+          {% else %}
+            No movies available at the moment.
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Custom CSS -->
+<style>
+  .movie-card {
+    border-radius: 15px;
+    border: none;
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  .movie-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  }
+  .card-img-top {
+    height: 300px;
+    object-fit: cover;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+  }
+</style>
+{% endblock %}

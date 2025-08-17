@@ -1,12 +1,31 @@
 {
-    "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "book_ur_seat/wsgi.py"
-        }
-    ],
-    "env": {
-        "PYTHONPATH": "."
+  "version": 2,
+  "builds": [
+    {
+      "src": "book_ur_seat/wsgi.py",
+      "use": "@vercel/python"
     },
-    "buildCommand": "python3.12 manage.py migrate --noinput && python3.12 manage.py collectstatic --noinput"
+    {
+      "src": "staticfiles/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "staticfiles/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "book_ur_seat/wsgi.py"
+    }
+  ],
+  "build": {
+    "env": {
+      "PYTHONPATH": ".",
+      "DJANGO_SETTINGS_MODULE": "book_ur_seat.settings",
+      "DISABLE_MIGRATIONS": "1"
+    },
+    "command": "python manage.py collectstatic --noinput"
+  }
 }
