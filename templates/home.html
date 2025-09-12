@@ -1,0 +1,297 @@
+{% extends "users/basic.html" %}
+{% load static %}
+{% block content %}
+<div class="aurora-background">
+    <div class="aurora-shape shape1"></div>
+    <div class="aurora-shape shape2"></div>
+    <div class="aurora-shape shape3"></div>
+</div>
+
+<style>
+    /* General Body Styles */
+    body {
+        font-family: "Arial", sans-serif;
+        background-color: #f8f9fa; /* Fallback background */
+        color: #333;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* 1. Animated Aurora Background */
+    .aurora-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+        background: #e0eafc;
+        background: -webkit-linear-gradient(to left, #e0eafc, #cfdef3);
+        background: linear-gradient(to left, #e0eafc, #cfdef3);
+    }
+    .aurora-shape {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(100px);
+        opacity: 0.5;
+    }
+    .shape1 {
+        width: 400px;
+        height: 400px;
+        background: #ff7e5f;
+        top: -100px;
+        left: -100px;
+        animation: move 20s infinite alternate;
+    }
+    .shape2 {
+        width: 500px;
+        height: 500px;
+        background: #feb47b;
+        bottom: -150px;
+        right: -150px;
+        animation: move 25s infinite alternate;
+    }
+    .shape3 {
+        width: 300px;
+        height: 300px;
+        background: #00c6ff;
+        bottom: 50px;
+        left: 100px;
+        animation: move 15s infinite alternate;
+    }
+    @keyframes move {
+        from { transform: translate(0, 0) rotate(0deg); }
+        to { transform: translate(100px, 100px) rotate(360deg); }
+    }
+
+    /* Hero Section with Video */
+    .hero-section {
+        position: relative;
+        height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-align: center;
+        overflow: hidden;
+        background-size: cover;
+        background-position: center center;
+    }
+    #hero-video {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        min-width: 100%;
+        min-height: 100%;
+        width: auto;
+        height: auto;
+        z-index: -1;
+        transform: translateX(-50%) translateY(-50%);
+    }
+    .hero-section .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    .hero-content {
+        z-index: 1;
+    }
+    .hero-content h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+    }
+
+    /* Glassmorphism Sections */
+    .glass-section {
+        background: rgba(255, 255, 255, 0.25);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        padding: 20px;
+        margin-bottom: 2rem;
+    }
+    .section-title {
+        font-size: 24px;
+        font-weight: bold;
+        padding-bottom: 10px;
+        color: #2c3e50;
+    }
+
+    /* Horizontal Scrolling Section */
+    .scroll-section {
+        display: flex;
+        overflow-x: auto;
+        padding: 20px 0;
+        scrollbar-width: none;
+    }
+    .scroll-section::-webkit-scrollbar { display: none; }
+
+    /* Enhanced Card Animations (3D Tilt) */
+    .card {
+        flex: 0 0 auto;
+        width: 250px;
+        margin-right: 15px;
+        border: none;
+        border-radius: 8px;
+        overflow: hidden;
+        transform-style: preserve-3d;
+        transition: transform 0.4s ease;
+    }
+    .card:hover {
+        transform: perspective(1000px) rotateY(var(--rotateY)) rotateX(var(--rotateX)) scale3d(1.05, 1.05, 1.05);
+        box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+    }
+    .card-img-top {
+        height: 300px;
+        object-fit: cover;
+    }
+    .card-body { padding: 15px; }
+    .card-title { font-size: 16px; font-weight: 600; }
+
+    /* Scroll Animations */
+    .fade-in-section {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+    .fade-in-section.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Dark Mode Adjustments */
+    body.dark-mode .aurora-background {
+        background: #141e30;
+        background: -webkit-linear-gradient(to left, #243b55, #141e30);
+        background: linear-gradient(to left, #243b55, #141e30);
+    }
+    body.dark-mode .glass-section {
+        background: rgba(0, 0, 0, 0.2);
+        color: #e0e0e0;
+    }
+    body.dark-mode .section-title {
+        color: #fff;
+    }
+    body.dark-mode .card {
+        background-color: #1e1e1e;
+    }
+</style>
+  
+<div class="hero-section" style="background-image: url(https://images.pexels.com/photos/2098428/pexels-photo-2098428.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1);">
+    <div class="overlay"></div>
+    <video playsinline="playsinline" autoplay="autoplay" muted="muted" loop="loop" id="hero-video" poster="https://images.pexels.com/photos/2098428/pexels-photo-2098428.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
+        <source src="https://videos.pexels.com/video-files/3129957/3129957-hd_1280_720_25fps.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div class="hero-content">
+        <h1>All Your Entertainment in One Place</h1>
+        <p class="lead">Book tickets for movies, live events, premieres, and more.</p>
+    </div>
+</div>
+  
+<div class="container mt-4">
+    {% if not user.is_authenticated %}
+    <div class="alert alert-info" role="alert">
+      <a href="{% url 'login' %}" class="alert-link">Login</a> or
+      <a href="{% url 'register' %}" class="alert-link">Register</a> to continue.
+    </div>
+    {% endif %}
+
+    <div class="glass-section fade-in-section">
+        <div class="section-title">Recommended Movies</div>
+        <div class="scroll-section">
+            {% if movies %}
+                {% for movie in movies|slice:":4" %}
+                <div class="card h-100">
+                    <a href="{% url 'theater_list' movie.id %}" class="text-decoration-none text-dark">
+                        <img src="{{ movie.image.url }}" class="card-img-top" alt="{{ movie.name }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ movie.name }}</h5>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+  
+    <div class="glass-section fade-in-section">
+        <div class="section-title">The Best of Live Events</div>
+        <div class="scroll-section">
+            <div class="card"><img src="https://storage.googleapis.com/a1aa/image/wQXDIlqv4XoxGtNEO9XkSKBZYe9IuDePUWEcd0WwqcNzY5nTA.jpg" class="card-img-top" alt="Event 1"><div class="card-body"><h5 class="card-title">Event 1</h5></div></div>
+            <div class="card"><img src="https://storage.googleapis.com/a1aa/image/t52p8goZiO6QDBfid8wRyReanID18f5AxbszVhfPgESGklfcC.jpg" class="card-img-top" alt="Event 2"><div class="card-body"><h5 class="card-title">Event 2</h5></div></div>
+            <div class="card"><img src="https://storage.googleapis.com/a1aa/image/lAqCOht0TCaeSSLzw2ZGlPmDwvIEI3RtqajPoTYQN0ZOs8zJA.jpg" class="card-img-top" alt="Event 3"><div class="card-body"><h5 class="card-title">Event 3</h5></div></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Dark Mode Logic
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme) {
+            document.body.classList.add(currentTheme);
+            if (currentTheme === 'dark-mode') {
+                themeToggle.checked = true;
+            }
+        }
+        themeToggle.addEventListener('change', function () {
+            if (this.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light-mode');
+            }
+        });
+    }
+
+    // 3D Card Tilt Effect
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const width = rect.width;
+            const height = rect.height;
+            const rotateX = (y / height - 0.5) * -20; // -10 to 10 degrees
+            const rotateY = (x / width - 0.5) * 20;  // -10 to 10 degrees
+            card.style.setProperty('--rotateX', rotateX + 'deg');
+            card.style.setProperty('--rotateY', rotateY + 'deg');
+        });
+        card.addEventListener('mouseleave', () => {
+            card.style.setProperty('--rotateX', '0deg');
+            card.style.setProperty('--rotateY', '0deg');
+        });
+    });
+
+    // Scroll Animation Logic
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+            }
+        });
+    }, {
+        threshold: 0.1
+    });
+
+    const sections = document.querySelectorAll('.fade-in-section');
+    sections.forEach(section => {
+        observer.observe(section);
+    });
+});
+</script>
+{% endblock %}
