@@ -1,18 +1,11 @@
 from django.urls import path
 from . import views
 
-app_name = 'movies'  # This is for URL namespacing
+app_name = 'movies'
 
 urlpatterns = [
-    # Common URL that changes behavior based on namespace
     path('', views.list_view, name='list'),
-    
-    # Movie-specific URLs
     path('<int:movie_id>/', views.movie_detail, name='movie_detail'),
     path('<int:movie_id>/theaters/', views.theater_list, name='theater_list'),
     path('theater/<int:theater_id>/seats/book/', views.book_seats, name='book_seats'),
-    
-    # Event-specific URLs
-    path('<slug:event_slug>/', views.event_detail, name='event_detail'),
-    path('<slug:event_slug>/book/', views.book_event, name='book_event'),
 ]

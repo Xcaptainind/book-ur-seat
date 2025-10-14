@@ -1,9 +1,44 @@
-{% extends "users/basic.html" %} {% block content %}
+{% extends "users/basic.html" %} 
+{% block content %}
+<style>
+  .screen-container {
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    padding: 20px;
+    border-radius: 8px;
+  }
+  .seat {
+    background-color: #333;
+    border: 1px solid #444;
+  }
+  .seat.selected {
+    background-color: #1976d2;
+    border-color: #2196f3;
+  }
+  .seat.occupied {
+    background-color: #424242;
+    border-color: #505050;
+  }
+  .seat:not(.occupied):hover {
+    background-color: #0d47a1;
+    cursor: pointer;
+  }
+  .showcase {
+    background-color: #262626;
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 15px;
+  }
+  .screen {
+    background-color: #424242;
+    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.1);
+  }
+</style>
 <div class="container mt-5">
   <div class="row">
     <div class="col-lg-8 mx-auto">
       <!-- Movie and Theater Info -->
-      <div class="card mb-4">
+      <div class="card mb-4 glass-effect">
         <div class="card-body">
           <div
             class="d-flex justify-content-between align-items-center flex-wrap"
@@ -40,7 +75,7 @@
 
           <form method="POST">
             {% csrf_token %}
-            <div class="d-flex justify-content-center flex-wrap mb-4">
+            <div id="seats-container" class="d-flex justify-content-center flex-wrap mb-4">
               {% for seat in seats %}
               <div class="seat {% if seat.is_booked %}sold{% endif %}">
                 {% if not seat.is_booked %}
@@ -48,7 +83,7 @@
                   type="checkbox"
                   name="seats"
                   value="{{ seat.id }}"
-                  class="d-none"
+                  class="d-none seat-checkbox"
                   id="seat-{{ seat.id }}"
                 />
                 <label
@@ -92,6 +127,19 @@
 <style>
   body {
     font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: #fff;
+  }
+  .card {
+    background-color: #2d2d2d;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  }
+  .card-body {
+    color: #fff;
+  }
+  .text-muted {
+    color: #aaa !important;
   }
   .seat {
     width: 30px;
@@ -102,69 +150,88 @@
     line-height: 30px;
     cursor: pointer;
     border-radius: 5px;
-    transition: background-color 0.3s, color 0.3s;
+    transition: all 0.3s ease;
+    background-color: #1a1a1a;
+    color: #28a745;
   }
   .seat:hover {
     background-color: #28a745;
-    color: white;
+    color: #fff;
+    transform: scale(1.1);
   }
   .seat.selected {
     background-color: #28a745;
-    color: white;
+    color: #fff;
   }
   .seat.sold {
-    background-color: #ccc;
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: #fff;
     cursor: not-allowed;
   }
   .screen {
     margin: 20px 0;
-    background-color: #ccc;
+    background-color: #4a4a4a;
     height: 50px;
     text-align: center;
     line-height: 50px;
-    color: #666;
+    color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+  }
+  .btn-outline-primary {
+    color: #007bff;
+    border-color: #007bff;
+    background-color: transparent;
+  }
+  .btn-outline-primary:hover {
+    background-color: #007bff;
+    color: #fff;
+  }
+  .btn-success {
+    background-color: #28a745;
+    border: none;
+  }
+  .btn-success:hover {
+    background-color: #218838;
   }
   .footer {
-    background-color: #333;
-    color: #ccc;
+    background-color: #2d2d2d;
+    color: #fff;
     padding: 20px 0;
   }
   .footer a {
-    color: #ccc;
+    color: #fff;
     text-decoration: none;
   }
   .footer a:hover {
-    text-decoration: underline;
-  }
-  .footer .col-md-2,
-  .footer .col-md-3 {
-    margin-bottom: 20px;
+    color: #28a745;
+    text-decoration: none;
   }
   .footer .social-icons i {
     font-size: 20px;
     margin: 0 10px;
   }
 </style>
-<!-- <h1>Seats for {{theater.name}} - {{theater.movie.name}}</h1>
-{% if error %}
-<p style="color:red;">{{error}}</p>
-{% endif %}
-<form method="POST">
-    {% csrf_token %}
-    <ul>
-        {% for seat in seats %}
-        <li>
-          Seats{{seat.seat_number}}:
-          {% if seat.is_booked %}
-          <strong>Booked seat {{seat.seat_number}}</strong>
-          {% else %}
-          <input type="checkbox" name="seats" value="{{seat.id}}">
-          <strong>Available seat {{seat.seat_number}}</strong>
-          {% endif%}
-        </li>
-        {% endfor %}
-      </ul>
-      <button type="submit">Book selected seats</button>
-</form> -->
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const container = document.getElementById('seats-container');
+    if (!container) return;
+
+    // Delegate only input change events for robust behavior
+    container.addEventListener('change', function (e) {
+      const target = e.target;
+      if (!target || !(target.matches && target.matches('input.seat-checkbox'))) return;
+      const seatDiv = target.closest('.seat');
+      if (!seatDiv || seatDiv.classList.contains('sold')) {
+        target.checked = false;
+        return;
+      }
+      seatDiv.classList.toggle('selected', target.checked);
+      e.stopPropagation();
+    });
+  });
+</script>
 
 {% endblock %}

@@ -1,0 +1,85 @@
+{% extends "users/basic.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="glass-section">
+        <div class="row">
+            <!-- Event Image -->
+            <div class="col-md-4">
+                <img src="{{ event.image.url }}" class="img-fluid rounded" alt="{{ event.name }}">
+            </div>
+            
+            <!-- Event Details -->
+            <div class="col-md-8">
+                <h1 class="display-4">{{ event.name }}</h1>
+                
+                <!-- Event Meta Information -->
+                <div class="mb-4">
+                    <p class="lead">
+                        <span class="badge badge-primary mr-2">{{ event.category.name }}</span>
+                        <span class="badge badge-{{ event.status|yesno:'success,warning,secondary' }}">
+                            {{ event.status|title }}
+                        </span>
+                    </p>
+                    <p>
+                        <i class="fas fa-calendar"></i> {{ event.event_date|date:"l, F d, Y" }}<br>
+                        <i class="fas fa-clock"></i> {{ event.start_time|time:"g:i A" }}
+                        {% if event.end_time %}
+                            - {{ event.end_time|time:"g:i A" }}
+                        {% endif %}
+                    </p>
+                    <p>
+                        <i class="fas fa-map-marker-alt"></i> {{ event.venue }}<br>
+                        <small class="text-muted">{{ event.venue_address }}</small>
+                    </p>
+                </div>
+
+                <!-- Pricing and Booking Section -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Ticket Information</h5>
+                        <p class="card-text">
+                            <strong>Price Range:</strong> 
+                            ₹{{ event.price_from|floatformat:2 }}
+                            {% if event.price_to %}
+                                - ₹{{ event.price_to|floatformat:2 }}
+                            {% endif %}
+                        </p>
+                        <p class="card-text">
+                            <strong>Available Seats:</strong> {{ event.available_seats }} / {{ event.total_seats }}
+                        </p>
+                        {% if user.is_authenticated %}
+                            {% if event.available_seats > 0 and event.status == 'upcoming' %}
+                                <a href="{% url 'events:book_event' event.slug %}" class="btn btn-primary btn-lg btn-block">
+                                    Book Tickets Now
+                                </a>
+                            {% elif event.status != 'upcoming' %}
+                                <button class="btn btn-secondary btn-lg btn-block" disabled>
+                                    Event {{ event.status|title }}
+                                </button>
+                            {% else %}
+                                <button class="btn btn-secondary btn-lg btn-block" disabled>
+                                    Sold Out
+                                </button>
+                            {% endif %}
+                        {% else %}
+                            <a href="{% url 'login' %}" class="btn btn-primary btn-lg btn-block">
+                                Login to Book Tickets
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Event Description -->
+                <div class="mb-4">
+                    <h3>About the Event</h3>
+                    <div class="event-description">
+                        {{ event.description|linebreaks }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,176 @@
+{% extends "users/basic.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="glass-section">
+        <div class="text-center mb-4">
+            <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+            <h2 class="section-title text-success">Booking Confirmed!</h2>
+            <p class="lead">Your movie tickets have been successfully booked.</p>
+        </div>
+
+        <!-- Booking Details -->
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0"><i class="fas fa-ticket-alt me-2"></i>Booking Details</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>{{ theater.movie.name }}</h5>
+                                <p class="text-muted">
+                                    <i class="fas fa-film me-2"></i>{{ theater.name }}<br>
+                                    <i class="fas fa-calendar me-2"></i>{{ theater.time|date:"F d, Y" }}<br>
+                                    <i class="fas fa-clock me-2"></i>{{ theater.time|time:"g:i A" }}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Seats Booked:</h6>
+                                <div class="d-flex flex-wrap">
+                                    {% for booking in bookings %}
+                                    <span class="badge bg-success me-2 mb-2">{{ booking.seat.seat_number }}</span>
+                                    {% endfor %}
+                                </div>
+                                <hr>
+                                <p class="mb-0">
+                                    <strong>Booking ID:</strong> {{ booking_data.bookingId }}<br>
+                                    <strong>Booking Date:</strong> {{ booking_data.bookingDate }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email Confirmation Section -->
+                <div class="card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h4 class="mb-0"><i class="fas fa-envelope me-2"></i>Email Confirmation</h4>
+                    </div>
+                    <div class="card-body">
+                        <p>We'll send a confirmation email to <strong>{{ booking_data.userEmail }}</strong> with your booking details.</p>
+                        <div class="text-center">
+                            <button id="sendEmailBtn" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane me-2"></i>Send Confirmation Email
+                            </button>
+                        </div>
+                        <div id="emailStatus" class="mt-3 text-center"></div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="text-center">
+                    <a href="{% url 'profile' %}" class="btn btn-outline-primary me-3">
+                        <i class="fas fa-user me-2"></i>View My Bookings
+                    </a>
+                    <a href="{% url 'movies:list' %}" class="btn btn-outline-success">
+                        <i class="fas fa-film me-2"></i>Book More Movies
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sendEmailBtn = document.getElementById('sendEmailBtn');
+    const emailStatus = document.getElementById('emailStatus');
+    
+    // Booking data from Django template
+    const bookingData = {{ booking_data|safe }};
+    
+    sendEmailBtn.addEventListener('click', function() {
+        // Disable button and show loading state
+        sendEmailBtn.disabled = true;
+        sendEmailBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
+        
+        // Send email using EmailJS
+        EmailService.sendMovieBookingConfirmation(bookingData)
+            .then(function(response) {
+                console.log('Email sent successfully:', response);
+                emailStatus.innerHTML = `
+                    <div class="alert alert-success" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Confirmation email sent successfully to ${bookingData.userEmail}!
+                    </div>
+                `;
+                sendEmailBtn.innerHTML = '<i class="fas fa-check me-2"></i>Email Sent';
+                sendEmailBtn.classList.remove('btn-primary');
+                sendEmailBtn.classList.add('btn-success');
+            })
+            .catch(function(error) {
+                console.error('Email sending failed:', error);
+                emailStatus.innerHTML = `
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        Failed to send email. Please try again or contact support.
+                    </div>
+                `;
+                sendEmailBtn.disabled = false;
+                sendEmailBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Retry Email';
+            });
+    });
+    
+    // Auto-send email after 2 seconds
+    setTimeout(function() {
+        if (!sendEmailBtn.disabled) {
+            sendEmailBtn.click();
+        }
+    }, 2000);
+});
+</script>
+
+<style>
+.glass-section {
+    background-color: #2d2d2d;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.card {
+    background-color: #2d2d2d;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.card-body {
+    color: #fff;
+}
+
+.text-muted {
+    color: #aaa !important;
+}
+
+.badge {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border: none;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+</style>
+{% endblock %}

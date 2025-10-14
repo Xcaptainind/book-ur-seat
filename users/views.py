@@ -3,11 +3,15 @@ from .forms import UserRegisterForm, UserUpdateForm
 from django.shortcuts import render,redirect
 from django.contrib.auth import login,authenticate
 from django.contrib.auth.decorators import login_required
-from movies.models import Movie , Booking
+from movies.models import Movie, Booking, LiveEvent, EventBooking
 
 def home(request):
-    movies= Movie.objects.all()
-    return render(request,'home.html',{'movies':movies})
+    movies = Movie.objects.all()
+    events = LiveEvent.objects.filter(status='upcoming').order_by('event_date')[:6]
+    return render(request, 'home.html', {
+        'movies': movies,
+        'events': events
+    })
 def register(request):
     if request.method == 'POST':
         form=UserRegisterForm(request.POST)
@@ -36,6 +40,7 @@ def login_view(request):
 @login_required
 def profile(request):
     bookings= Booking.objects.filter(user=request.user)
+    event_bookings = LiveEvent.objects.filter(eventbooking__user=request.user).distinct()
     if request.method == 'POST':
         u_form = UserUpdateForm(request.POST, instance=request.user)
         if u_form.is_valid():
@@ -44,7 +49,11 @@ def profile(request):
     else:
         u_form = UserUpdateForm(instance=request.user)
 
-    return render(request, 'users/profile.html', {'u_form': u_form,'bookings':bookings})
+    return render(request, 'users/profile.html', {
+        'u_form': u_form,
+        'bookings': bookings,
+        'event_bookings': event_bookings
+    })
 
 @login_required
 def reset_password(request):

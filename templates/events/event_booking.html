@@ -1,0 +1,316 @@
+{% extends "users/basic.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="glass-section">
+        <h2 class="section-title mb-4">Book Tickets - {{ event.name }}</h2>
+
+        {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <div class="row">
+            <!-- Event Summary -->
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ event.name }}</h5>
+                        <p class="card-text">
+                            <i class="fas fa-calendar"></i> {{ event.event_date|date:"D, M d, Y" }}<br>
+                            <i class="fas fa-clock"></i> {{ event.start_time|time:"g:i A" }}<br>
+                            <i class="fas fa-map-marker-alt"></i> {{ event.venue }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Pricing Categories -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Ticket Categories</h5>
+                        {% for category in seat_categories %}
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>{{ category.name }}</span>
+                            <span class="badge bg-primary">₹{{ category.price }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seat Selection -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title text-center mb-4">Select Your Seats</h5>
+                        <div class="screen mb-4">Stage This Way</div>
+
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <!-- Seat Categories Tabs -->
+                            <ul class="nav nav-tabs mb-3" role="tablist">
+                                {% for category in seat_categories %}
+                                <li class="nav-item">
+                                    <a class="nav-link {% if forloop.first %}active{% endif %}" 
+                                       id="cat-{{ category.id }}-tab" 
+                                       data-toggle="tab" 
+                                       href="#cat-{{ category.id }}" 
+                                       role="tab">
+                                        {{ category.name }}
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+
+                            <!-- Seat Grid by Category -->
+                            <div class="tab-content mb-4">
+                                {% for category in seat_categories %}
+                                <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" 
+                                     id="cat-{{ category.id }}" 
+                                     role="tabpanel">
+                                    
+                                    <div class="seat-grid">
+                                        {% for seat in seats %}
+                                            {% if seat.category == category %}
+                                            <div class="seat {% if seat.is_booked %}sold{% endif %}"
+                                                 data-price="{{ category.price }}">
+                                                {% if not seat.is_booked %}
+                                                <input type="checkbox" 
+                                                       name="seats" 
+                                                       value="{{ seat.id }}" 
+                                                       class="seat-checkbox" 
+                                                       id="seat-{{ seat.id }}">
+                                                <label for="seat-{{ seat.id }}"
+                                                       class="seat-label">
+                                                    {{ seat.row }}{{ seat.number }}
+                                                </label>
+                                                {% else %}
+                                                <span class="seat-label">{{ seat.row }}{{ seat.number }}</span>
+                                                {% endif %}
+                                            </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Seat Legend -->
+                            <div class="d-flex justify-content-center mb-4">
+                                <div class="d-flex align-items-center me-4">
+                                    <div class="seat"></div>
+                                    <span class="ms-2">Available</span>
+                                </div>
+                                <div class="d-flex align-items-center me-4">
+                                    <div class="seat selected"></div>
+                                    <span class="ms-2">Selected</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="seat sold"></div>
+                                    <span class="ms-2">Sold</span>
+                                </div>
+                            </div>
+
+                            <!-- Booking Summary -->
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Booking Summary</h5>
+                                    <div id="selected-seats-summary"></div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between">
+                                        <strong>Total Amount:</strong>
+                                        <strong>₹<span id="total_amount">0.00</span></strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100" id="book-btn" disabled>
+                                Book Selected Seats
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+body {
+    background-color: #1a1a1a;
+    color: #fff;
+}
+
+.glass-section {
+    background-color: #2d2d2d;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.card {
+    background-color: #2d2d2d;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.card-body {
+    color: #fff;
+}
+
+.text-muted {
+    color: #aaa !important;
+}
+
+.screen {
+    background: #4a4a4a;
+    height: 40px;
+    width: 100%;
+    margin: 15px 0;
+    color: white;
+    line-height: 40px;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.seat-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.seat {
+    position: relative;
+    width: 35px;
+    height: 35px;
+    border: 2px solid #28a745;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #1a1a1a;
+    color: #28a745;
+}
+
+.seat.selected {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.seat.sold {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    cursor: not-allowed;
+    color: #fff;
+}
+
+.seat-checkbox {
+    display: none;
+}
+
+.seat-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.seat:not(.sold):hover {
+    transform: scale(1.1);
+    border-color: #28a745;
+    background-color: #28a745;
+    color: #fff;
+}
+
+.nav-tabs {
+    border-bottom: 1px solid #4a4a4a;
+}
+
+.nav-tabs .nav-link {
+    color: #aaa;
+    border: none;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: transparent;
+    color: #fff;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: transparent;
+    border-color: #28a745;
+    border-bottom: 2px solid #28a745;
+    color: #fff;
+}
+
+.badge {
+    background-color: #007bff !important;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn:disabled {
+    background-color: #4a4a4a;
+    cursor: not-allowed;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const seats = document.querySelectorAll('.seat-checkbox');
+    const summaryDiv = document.getElementById('selected-seats-summary');
+    const totalAmount = document.getElementById('total_amount');
+    const bookBtn = document.getElementById('book-btn');
+    let selectedSeats = new Set();
+
+    seats.forEach(seat => {
+        seat.addEventListener('change', updateSummary);
+    });
+
+    function updateSummary() {
+        selectedSeats.clear();
+        let total = 0;
+        let summary = '';
+
+        seats.forEach(seat => {
+            if (seat.checked) {
+                const seatDiv = seat.closest('.seat');
+                const price = parseFloat(seatDiv.dataset.price);
+                const label = seat.nextElementSibling.textContent;
+                
+                selectedSeats.add(label);
+                total += price;
+                
+                summary += `
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Seat ${label}</span>
+                        <span>₹${price.toFixed(2)}</span>
+                    </div>`;
+            }
+            
+            seat.closest('.seat').classList.toggle('selected', seat.checked);
+        });
+
+        summaryDiv.innerHTML = summary;
+        totalAmount.textContent = total.toFixed(2);
+        bookBtn.disabled = selectedSeats.size === 0;
+    }
+});
+</script>
+{% endblock %}

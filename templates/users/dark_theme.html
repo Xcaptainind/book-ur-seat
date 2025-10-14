@@ -1,0 +1,187 @@
+{% comment %}
+This file contains common dark theme styles to be included in basic.html
+{% endcomment %}
+<style>
+    /* Dark Theme Base Styles */
+    body {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+    }
+
+    /* Common Container Styles */
+    .container, .container-fluid {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+    }
+
+    /* Card Styles */
+    .card {
+        background-color: #262626;
+        border-color: #333;
+        color: #ffffff;
+    }
+    .card-header {
+        background-color: #1e1e1e;
+        border-bottom-color: #333;
+    }
+    .card-body {
+        background-color: #262626;
+    }
+    .card-footer {
+        background-color: #1e1e1e;
+        border-top-color: #333;
+    }
+
+    /* Form Controls */
+    .form-control {
+        background-color: #333;
+        border-color: #444;
+        color: #ffffff;
+    }
+    .form-control:focus {
+        background-color: #404040;
+        border-color: #0077cc;
+        color: #ffffff;
+    }
+    .input-group-text {
+        background-color: #333;
+        border-color: #444;
+        color: #ffffff;
+    }
+
+    /* Tables */
+    .table {
+        color: #e0e0e0;
+    }
+    .table thead th {
+        background-color: #1e1e1e;
+        border-color: #333;
+    }
+    .table td, .table th {
+        border-color: #333;
+    }
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #262626;
+    }
+
+    /* Lists and Navigation */
+    .list-group-item {
+        background-color: #262626;
+        border-color: #333;
+        color: #e0e0e0;
+    }
+    .nav-tabs .nav-link.active {
+        background-color: #262626;
+        border-color: #333;
+        color: #ffffff;
+    }
+    .nav-tabs .nav-link:hover {
+        border-color: #444;
+    }
+
+    /* Modal Dialogs */
+    .modal-content {
+        background-color: #262626;
+        border-color: #333;
+    }
+    .modal-header {
+        border-bottom-color: #333;
+    }
+    .modal-footer {
+        border-top-color: #333;
+    }
+
+    /* Alerts and Messages */
+    .alert {
+        background-color: #1e1e1e;
+        border-color: #333;
+        color: #ffffff;
+    }
+    .alert-info {
+        background-color: #1a237e;
+        border-color: #1e88e5;
+    }
+    .alert-success {
+        background-color: #1b5e20;
+        border-color: #2e7d32;
+    }
+    .alert-warning {
+        background-color: #f57f17;
+        border-color: #fdd835;
+        color: #000000;
+    }
+    .alert-danger {
+        background-color: #b71c1c;
+        border-color: #c62828;
+    }
+
+    /* Text Colors */
+    .text-muted {
+        color: #9e9e9e !important;
+    }
+    .page-title {
+        color: #00a8ff;
+    }
+    .text-dark {
+        color: #e0e0e0 !important;
+    }
+
+    /* Links */
+    a {
+        color: #00a8ff;
+    }
+    a:hover {
+        color: #29b6f6;
+    }
+    .btn-link {
+        color: #00a8ff;
+    }
+    .btn-link:hover {
+        color: #29b6f6;
+    }
+
+    /* Custom Components */
+    .search-filter-box {
+        background-color: #262626;
+        border: 1px solid #333;
+        border-radius: 8px;
+    }
+    .filter-section {
+        background-color: #1e1e1e;
+        border: 1px solid #333;
+        border-radius: 6px;
+        padding: 15px;
+    }
+    
+    /* Buttons */
+    .btn-outline-light {
+        border-color: #444;
+    }
+    .btn-outline-light:hover {
+        background-color: #333;
+    }
+
+    /* Misc Elements */
+    hr {
+        border-color: #333;
+    }
+    .dropdown-menu {
+        background-color: #262626;
+        border-color: #333;
+    }
+    .dropdown-item {
+        color: #e0e0e0;
+    }
+    .dropdown-item:hover {
+        background-color: #333;
+        color: #ffffff;
+    }
+
+    /* Custom Glass Effect */
+    .glass-effect {
+        background: rgba(38, 38, 38, 0.85);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+</style>

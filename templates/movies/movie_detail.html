@@ -1,0 +1,60 @@
+{% extends 'users/basic.html' %}
+
+{% block title %}
+    {{ movie.name }}
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row g-4 align-items-center">
+        <div class="col-lg-5 col-md-6 text-center">
+            <img src="{{ movie.image.url }}" class="img-fluid rounded shadow-lg" alt="{{ movie.name }}">
+        </div>
+
+        <div class="col-lg-7 col-md-6">
+            <h1 class="fw-bold display-5 mb-3">{{ movie.name }}</h1>
+            <p class="mb-2 fs-5"><span class="fw-semibold">⭐ Rating:</span> {{ movie.rating }}</p>
+            <p class="mb-2"><span class="fw-semibold">🎭 Cast:</span> {{ movie.cast }}</p>
+            <p class="mb-2"><span class="fw-semibold">📂 Genre:</span> {{ movie.genre }}</p>
+            <p class="mb-2"><span class="fw-semibold">🌐 Language:</span> {{ movie.language }}</p>
+            <p class="mt-3"><span class="fw-semibold">📝 Description:</span> {{ movie.description }}</p>
+
+            {% if movie.trailer_link %}
+            <div class="ratio ratio-16x9 my-4 shadow-sm rounded">
+                <iframe src="{{ movie.trailer_link }}" title="Trailer" allowfullscreen></iframe>
+            </div>
+            {% endif %}
+
+            <a href="{% url 'movies:theater_list' movie.id %}" class="btn btn-primary btn-lg mt-3 shadow-sm">
+                🎟️ Book Tickets
+            </a>
+        </div>
+    </div>
+</div>
+<style>
+    body {
+        background-color: #f8f9fa; /* A light background color for contrast */
+    }
+    h1.display-5 {
+        color: #2c3e50;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px); /* Add a slight lift effect on hover */
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .img-fluid { max-height: 340px; object-fit: cover; }
+    }
+    @media (max-width: 576px) {
+        .img-fluid { max-height: 240px; }
+        .display-5 { font-size: 1.6rem; }
+    }
+</style>
+{% endblock %}

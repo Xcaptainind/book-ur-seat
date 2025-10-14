@@ -46,10 +46,10 @@
         </div>
       </div>
       
-      <!-- Bookings Card -->
-      <div class="card shadow">
+      <!-- Movie Bookings Card -->
+      <div class="card shadow mb-4">
         <div class="card-header bg-success text-white">
-          <h4 class="mb-0"><i class="fas fa-ticket-alt me-2"> </i> Your Bookings</h4>
+          <h4 class="mb-0"><i class="fas fa-film me-2"> </i> Movie Bookings</h4>
         </div>
         <div class="card-body">
           {% if bookings %}
@@ -70,9 +70,48 @@
               {% endfor %}
             </div>
           {% else %}
-            <div class="text-center py-5">
-              <i class="fas fa-ticket-alt fa-4x text-muted mb-3"></i>
-              <p class="lead mb-0">No bookings yet. Time to plan your next movie night!</p>
+            <div class="text-center py-3">
+              <i class="fas fa-film fa-3x text-muted mb-2"></i>
+              <p class="mb-0">No movie bookings yet.</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Event Bookings Card -->
+      <div class="card shadow">
+        <div class="card-header bg-info text-white">
+          <h4 class="mb-0"><i class="fas fa-calendar me-2"> </i> Event Bookings</h4>
+        </div>
+        <div class="card-body">
+          {% if event_bookings %}
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+              {% for event in event_bookings %}
+                {% for booking in event.eventbooking_set.all %}
+                  {% if booking.user == user %}
+                    <div class="col">
+                      <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                          <h5 class="card-title">{{ event.name }}</h5>
+                          <p class="card-text">
+                            <i class="fas fa-calendar me-2 text-muted"> </i>  {{ event.event_date|date:"F d, Y" }}<br>
+                            <i class="fas fa-clock me-2 text-muted"> </i>  {{ event.start_time|time:"g:i A" }}<br>
+                            <i class="fas fa-map-marker-alt me-2 text-muted"> </i>  {{ event.venue }}<br>
+                            <i class="fas fa-chair me-2 text-muted"> </i>  Seats: {{ booking.get_seats_display }}<br>
+                            <i class="fas fa-rupee-sign me-2 text-muted"> </i>  Total: ₹{{ booking.total_price }}<br>
+                            <i class="far fa-clock me-2 text-muted"> </i>  Booked: {{ booking.booking_date|date:"F d, Y H:i" }}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="text-center py-3">
+              <i class="fas fa-calendar fa-3x text-muted mb-2"></i>
+              <p class="mb-0">No event bookings yet.</p>
             </div>
           {% endif %}
         </div>
