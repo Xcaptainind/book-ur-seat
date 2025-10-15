@@ -1,3 +1,5 @@
+# movies/admin.py
+
 from django.contrib import admin
 from .models import (
     Movie, Theater, Seat, Booking,
@@ -7,7 +9,11 @@ from .models import (
 
 @admin.register(Movie)
 class MovieAdmin(admin.ModelAdmin):
-    list_display = ['name', 'rating', 'cast', 'description', 'genre', 'language']
+    # This line tells the admin which fields to show in the add/edit form
+    fields = ['name', 'image', 'rating', 'cast', 'description', 'genre', 'language', 'trailer_link']
+    
+    # This line controls the columns in the movie list view
+    list_display = ['name', 'rating', 'genre', 'language']
 
 @admin.register(Theater)
 class TheaterAdmin(admin.ModelAdmin):
