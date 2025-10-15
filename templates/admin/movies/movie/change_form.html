@@ -1,0 +1,5 @@
+{% extends "admin/change_form.html" %}
+
+{% block form_top %}
+  <form action="{{ form_url }}" method="post" id="{{ opts.model_name }}_form" novalidate enctype="multipart/form-data">
+{% endblock %}
